@@ -36,7 +36,7 @@ export class App extends React.Component {
   render() {
     return (
       <AppWrapper>
-        <Button label="Add new portfolio" onClick={() => this.togglePopup()} />
+        <Button label="Add new portfolio" onClick={() => this.togglePopup()} disabled={this.state.portfolios.length >= 10} />
         <PortfolioWrapper>
           {Object.keys(this.state.portfolios).map(key => (
             <Portfolio

@@ -57,7 +57,7 @@ export class Portfolio extends React.Component {
                         />
                     ))}
                 </StockTable>
-                <Button label="Add Stock" onClick={this.toggleInputPopup} />
+                <Button label="Add Stock" onClick={this.toggleInputPopup} disabled={this.state.stocks.length >= 50} />
 
                 {this.state.isGraphOpen &&
                 <PopupGraph

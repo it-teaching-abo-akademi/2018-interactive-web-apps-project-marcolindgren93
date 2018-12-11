@@ -8,10 +8,10 @@ const StyledButton = styled.button`
   font-size: 15px;
   border: none;
   border-radius: 15px;
-  background-color: ${props => props.color || 'dodgerblue'};
+  background-color: ${props => props.color || (props.disabled ? 'gainsboro' :'dodgerblue')};
   color: white;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'default' : 'pointer'};
   
   :first-child {
     margin-left: 0;
@@ -25,7 +25,7 @@ const StyledButton = styled.button`
 export class Button extends React.Component {
     render() {
         return (
-            <StyledButton color={this.props.color} onClick={this.props.onClick}>{this.props.label}</StyledButton>
+            <StyledButton disabled={this.props.disabled} color={this.props.color} onClick={this.props.disabled ? () => undefined : this.props.onClick}>{this.props.label}</StyledButton>
         );
     }
 }
