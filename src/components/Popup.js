@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const PopupBackground = styled.div`
   display: flex;
@@ -19,6 +19,8 @@ const PopupWindow = styled.div`
   max-width: 800px;
   padding: 10px;
   background-color: white;
+  border-radius: 15px;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
 `;
 
 export class Popup extends React.Component {

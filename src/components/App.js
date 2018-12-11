@@ -1,6 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 import { Button } from "./Button";
+import { PopupInput } from "./PopupInput";
 import { Portfolio } from "./Portfolio";
 
 const AppWrapper = styled.div`
@@ -26,19 +27,36 @@ export class App extends React.Component {
       portfolios: JSON.parse(localStorage.getItem("portfolios")) || []
     };
 
-    this.togglePopup = this.togglePopup.bind(this);
+    this.newPortfolio = this.newPortfolio.bind(this);
     this.removePortfolio = this.removePortfolio.bind(this);
+    this.togglePopup = this.togglePopup.bind(this);
+    this.updateStocks = this.updateStocks.bind(this);
   }
 
   render() {
     return (
       <AppWrapper>
-        <Button label="Add new portfolio" onClick={() => this.newPortfolio()} />
-          <PortfolioWrapper>
-            {Object.keys(this.state.portfolios).map(key => (
-              <Portfolio key={key} index={key} portfolio={this.state.portfolios[key]} onDelete={this.removePortfolio} />
-            ))}
-          </PortfolioWrapper>
+        <Button label="Add new portfolio" onClick={() => this.togglePopup()} />
+        <PortfolioWrapper>
+          {Object.keys(this.state.portfolios).map(key => (
+            <Portfolio
+                key={key}
+                index={key}
+                portfolio={this.state.portfolios[key]}
+                onDelete={this.removePortfolio}
+                onUpdateStocks={this.updateStocks}
+            />
+          ))}
+        </PortfolioWrapper>
+
+        {this.state.isPopupOpen &&
+        <PopupInput
+            labelText="Enter a name for your portfolio:"
+            submitText="Add Portfolio"
+            maxLength="18"
+            onSubmit={this.newPortfolio}
+            onClose={this.togglePopup}
+        />}
       </AppWrapper>
     );
   }
@@ -47,9 +65,9 @@ export class App extends React.Component {
     this.setState({isPopupOpen: !this.state.isPopupOpen})
   }
 
-  newPortfolio() {
+  newPortfolio(name) {
     if (this.state.portfolios.length < 10) {
-      const newPortfolios = this.state.portfolios.concat([{}]);
+      const newPortfolios = this.state.portfolios.concat([{name: name || "", currency: "EUR", stocks: []}]);
       this.setState({portfolios: newPortfolios});
       localStorage.setItem("portfolios", JSON.stringify(newPortfolios));
     }
@@ -59,6 +77,15 @@ export class App extends React.Component {
     if (parseInt(index) >= 0) {
       let newPortfolios = this.state.portfolios;
       newPortfolios.splice(index, 1);
+      this.setState({portfolios: newPortfolios});
+      localStorage.setItem("portfolios", JSON.stringify(newPortfolios));
+    }
+  }
+
+  updateStocks(index, newStocks) {
+    if (parseInt(index) >= 0) {
+      const newPortfolios = this.state.portfolios;
+      newPortfolios[index].stocks = newStocks;
       this.setState({portfolios: newPortfolios});
       localStorage.setItem("portfolios", JSON.stringify(newPortfolios));
     }
