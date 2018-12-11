@@ -9,7 +9,6 @@ const TableWrapper = styled.div`
   border-radius: 15px;
   box-shadow: inset 1px 1px 5px rgba(0, 0, 0, 0.4);
   position: relative;
-  z-index: 10;
 `;
 
 const StyledTable = styled.table`

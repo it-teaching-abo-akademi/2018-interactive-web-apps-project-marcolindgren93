@@ -12,6 +12,7 @@ const PopupBackground = styled.div`
   left: 0;
   margin: 0;
   background-color: rgba(0, 0, 0, 0.3);
+  z-index: 100;
 `;
 
 const PopupWindow = styled.div`
@@ -21,6 +22,7 @@ const PopupWindow = styled.div`
   background-color: white;
   border-radius: 15px;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
+  z-index: 101;
 `;
 
 export class Popup extends React.Component {
