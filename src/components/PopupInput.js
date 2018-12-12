@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Button } from "./Button";
 import { Popup } from "./Popup";
+import { ButtonWrapper } from "./Portfolio";
 
 const PopupInputWrapper = styled.div`
   display: flex;
@@ -14,11 +15,6 @@ const StyledInput = styled.input`
   font-size: 15px;
   height: 30px;
   width: 300px;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
 `;
 
 export class PopupInput extends React.Component {
@@ -39,9 +35,9 @@ export class PopupInput extends React.Component {
             <Popup>
                 <PopupInputWrapper>
                     {this.props.labelText}
-                    <StyledInput ref={(input) => this.input = input} value={this.state.inputStr} maxLength={this.props.maxLength} onChange={event => this.handleInput(event)} />
+                    <StyledInput type="text" ref={(input) => this.input = input} value={this.state.inputStr} maxLength={this.props.maxLength} onChange={event => this.handleInput(event)} />
                     <ButtonWrapper>
-                        <Button label={this.props.submitText || "Submit"} onClick={() => this.handleSubmit()} />
+                        <Button label={this.props.submitText || "Submit"} onClick={() => this.handleSubmit()} disabled={!this.state.inputStr} />
                         <Button label="Cancel" color="crimson" onClick={this.props.onClose} />
                     </ButtonWrapper>
                 </PopupInputWrapper>

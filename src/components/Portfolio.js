@@ -20,6 +20,15 @@ const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  margin-bottom: 10px;
+`;
+
+export const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 10px;
 `;
 
 export class Portfolio extends React.Component {
@@ -30,12 +39,20 @@ export class Portfolio extends React.Component {
             isGraphOpen: false,
             isInputOpen: false,
             stocks: this.props.portfolio.stocks,
+            selectedStocks: [],
         };
 
         this.toggleGraphPopup = this.toggleGraphPopup.bind(this);
         this.toggleInputPopup = this.toggleInputPopup.bind(this);
         this.newStock = this.newStock.bind(this);
         this.updateStockQuantity = this.updateStockQuantity.bind(this);
+        this.toggleSelect = this.toggleSelect.bind(this);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.portfolio !== this.props.portfolio) {
+            this.resetState();
+        }
     }
 
     render() {
@@ -50,14 +67,20 @@ export class Portfolio extends React.Component {
                     {Object.keys(this.state.stocks).map(key => (
                         <Stock
                             key={key}
+                            index={key}
                             name={this.state.stocks[key].symbol}
-                            value={""}
+                            value={3}
                             quantity={this.state.stocks[key].quantity}
-                            onSelect={() => undefined}
+                            selected={this.state.selectedStocks.includes(key)}
+                            onSelect={this.toggleSelect}
+                            onUpdateQuantity={this.updateStockQuantity}
                         />
                     ))}
                 </StockTable>
-                <Button label="Add Stock" onClick={this.toggleInputPopup} disabled={this.state.stocks.length >= 50} />
+                <ButtonWrapper>
+                    <Button label="Add Stock" onClick={this.toggleInputPopup} disabled={this.state.stocks.length >= 50} />
+                    <Button label="Remove selected" onClick={() => undefined} disabled={this.state.selectedStocks.length === 0} />
+                </ButtonWrapper>
 
                 {this.state.isGraphOpen &&
                 <PopupGraph
@@ -99,5 +122,22 @@ export class Portfolio extends React.Component {
             this.setState({stocks: newStocks});
             this.props.onUpdateStocks(this.props.index, newStocks);
         }
+    }
+
+    toggleSelect(index) {
+        if (parseInt(index) >= 0) {
+            const stocks = this.state.selectedStocks;
+            const i = stocks.indexOf(index);
+            if (i > -1) {
+                stocks.splice(i, 1);
+            } else {
+                stocks.push(index);
+            }
+            this.setState({selectedStocks: stocks});
+        }
+    }
+
+    resetState() {
+        this.setState({stocks: this.props.portfolio.stocks, selectedStocks: [],});
     }
 }
