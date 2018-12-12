@@ -47,6 +47,7 @@ export class Portfolio extends React.Component {
         this.newStock = this.newStock.bind(this);
         this.updateStockQuantity = this.updateStockQuantity.bind(this);
         this.toggleSelect = this.toggleSelect.bind(this);
+        this.removeStocks = this.removeStocks.bind(this);
     }
 
     componentDidUpdate(prevProps) {
@@ -79,7 +80,7 @@ export class Portfolio extends React.Component {
                 </StockTable>
                 <ButtonWrapper>
                     <Button label="Add Stock" onClick={this.toggleInputPopup} disabled={this.state.stocks.length >= 50} />
-                    <Button label="Remove selected" onClick={() => undefined} disabled={this.state.selectedStocks.length === 0} />
+                    <Button label="Remove selected" onClick={this.removeStocks} disabled={this.state.selectedStocks.length === 0} />
                 </ButtonWrapper>
 
                 {this.state.isGraphOpen &&
@@ -135,6 +136,20 @@ export class Portfolio extends React.Component {
             }
             this.setState({selectedStocks: stocks});
         }
+    }
+
+    removeStocks() {
+        const selected = this.state.selectedStocks;
+        const newStocks = this.state.stocks;
+        let i = 0;
+        for (const stockNum of selected) {
+            const index = parseInt(stockNum)-i;
+            console.log(index);
+            newStocks.splice(index, 1);
+            i++;
+        }
+        this.setState({stocks: newStocks, selectedStocks: []});
+        this.props.onUpdateStocks(this.props.index, newStocks);
     }
 
     resetState() {

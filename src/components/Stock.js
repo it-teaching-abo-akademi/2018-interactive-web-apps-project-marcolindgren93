@@ -19,6 +19,12 @@ export class Stock extends React.Component {
         };
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.quantity !== this.props.quantity) {
+            this.resetState();
+        }
+    }
+
     render() {
         return (
             <StyledTableRow>
@@ -38,5 +44,9 @@ export class Stock extends React.Component {
     handleInput(event) {
         this.setState({inputNum: event.target.value});
         this.props.onUpdateQuantity(this.props.index, event.target.value)
+    }
+
+    resetState() {
+        this.setState({inputNum: this.props.quantity});
     }
 }
