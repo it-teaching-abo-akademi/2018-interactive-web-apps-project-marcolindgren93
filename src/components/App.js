@@ -24,13 +24,35 @@ export class App extends React.Component {
 
     this.state = {
       isPopupOpen: false,
-      portfolios: JSON.parse(localStorage.getItem("portfolios")) || []
+      portfolios: JSON.parse(localStorage.getItem("portfolios")) || [],
+      exchangeError: null,
+      exchangeIsLoaded: false,
+      exchangeRate: -1,
     };
 
     this.newPortfolio = this.newPortfolio.bind(this);
     this.removePortfolio = this.removePortfolio.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.updateStocks = this.updateStocks.bind(this);
+  }
+
+  componentDidMount() {
+    fetch("https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=EUR&apikey="+process.env.REACT_APP_ALPHA_VANTAGE_API_KEY)
+      .then(response => response.json())
+      .then(
+        result => {
+          if ("Error Message" in result) {
+            this.setState({exchangeIsLoaded: true, exchangeError: {message: "Invalid symbol"}});
+          } else if ("Note" in result) {
+              this.setState({exchangeIsLoaded: true, exchangeError: {message: "API limit reached"}});
+          } else {
+            this.setState({exchangeIsLoaded: true, exchangeRate: result["Realtime Currency Exchange Rate"]["5. Exchange Rate"]});
+          }
+        },
+        error => {
+          this.setState({exchangeIsLoaded: true, exchangeError: error});
+        }
+      );
   }
 
   render() {
@@ -40,22 +62,25 @@ export class App extends React.Component {
         <PortfolioWrapper>
           {Object.keys(this.state.portfolios).map(key => (
             <Portfolio
-                key={key}
-                index={key}
-                portfolio={this.state.portfolios[key]}
-                onDelete={this.removePortfolio}
-                onUpdateStocks={this.updateStocks}
+              key={key}
+              index={key}
+              portfolio={this.state.portfolios[key]}
+              onDelete={this.removePortfolio}
+              onUpdateStocks={this.updateStocks}
+              exchangeError={this.state.exchangeError}
+              exchangeIsLoaded={this.state.exchangeIsLoaded}
+              exchangeRate={parseFloat(this.state.exchangeRate)}
             />
           ))}
         </PortfolioWrapper>
 
         {this.state.isPopupOpen &&
         <PopupInput
-            labelText="Enter a name for your portfolio:"
-            submitText="Add Portfolio"
-            maxLength="18"
-            onSubmit={this.newPortfolio}
-            onClose={this.togglePopup}
+          labelText="Enter a name for your portfolio:"
+          submitText="Add Portfolio"
+          maxLength="16"
+          onSubmit={this.newPortfolio}
+          onClose={this.togglePopup}
         />}
       </AppWrapper>
     );
