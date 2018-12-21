@@ -15,6 +15,7 @@ const PortfolioBox = styled.div`
   width: 100%;
   max-width: 800px;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
+  background-color: aliceblue;
 `;
 
 const HeaderWrapper = styled.div`
@@ -78,10 +79,10 @@ export class Portfolio extends React.Component {
                     <Button label="&nbsp;X&nbsp;" color="crimson" onClick={() => this.props.onDelete(this.props.index)} />
                 </HeaderWrapper>
                 <ExchangeWrapper>
-                    <Button label="Show in €" onClick={this.setEUR} disabled={this.state.currency === "EUR" || !this.props.exchangeIsLoaded || !!this.props.exchangeError} />
+                    <Button label="Show in €" onClick={this.setEUR} disabled={this.props.exchangeRate === -1} />
                     {!this.props.exchangeIsLoaded && <LoadingSpinner size="33px" />}
-                    {!!this.props.exchangeError && this.props.exchangeError.message}
-                    <Button label="Show in $" onClick={this.setUSD} disabled={this.state.currency === "USD" || !this.props.exchangeIsLoaded || !!this.props.exchangeError} />
+                    {this.props.exchangeIsLoaded && this.props.exchangeRate === -1 && <Button label="&nbsp;&#8635;&nbsp;" onClick={this.props.onReloadExchange} color="springgreen" />}
+                    <Button label="Show in $" onClick={this.setUSD} disabled={this.props.exchangeRate === -1} />
                 </ExchangeWrapper>
                 <StockTable>
                     {Object.keys(this.state.stocks).map(key => (
@@ -101,7 +102,11 @@ export class Portfolio extends React.Component {
                     ))}
                 </StockTable>
                 <ButtonWrapper>
+                    Total value of {this.props.portfolio.name}: {this.state.currency === "USD" && "$"}{this.calculateTotalValue()}{this.state.currency === "EUR" && "€"}
+                </ButtonWrapper>
+                <ButtonWrapper>
                     <Button label="Add Stock" onClick={this.toggleInputPopup} disabled={this.state.stocks.length >= 50} />
+                    <Button label="Performance graph" onClick={this.toggleGraphPopup} disabled={this.state.selectedStocks.length < 2 || this.state.selectedStocks.length > 3} />
                     <Button label="Remove selected" onClick={this.removeStocks} disabled={this.state.selectedStocks.length === 0} />
                 </ButtonWrapper>
 
@@ -109,6 +114,7 @@ export class Portfolio extends React.Component {
                 <PopupGraph
                     name={name}
                     onClose={this.toggleGraphPopup}
+                    stocks={this.state.stocks.filter(stock => this.state.selectedStocks.includes(this.state.stocks.indexOf(stock).toString()))}
                 />}
                 {this.state.isInputOpen &&
                 <PopupInput
@@ -172,17 +178,14 @@ export class Portfolio extends React.Component {
     removeStocks() {
         const selected = this.state.selectedStocks;
         const newStocks = this.state.stocks;
-        console.log(newStocks);
         let i = 0;
         let lastIndex = 50;
         for (const stockNum of selected) {
             const index = parseInt(stockNum);
-            console.log(lastIndex >= index ? index : index-i);
             newStocks.splice(lastIndex >= index ? index : index-i, 1);
             i++;
             lastIndex = index;
         }
-        console.log(newStocks);
         this.setState({stocks: newStocks, selectedStocks: []});
         this.props.onUpdateStocks(this.props.index, newStocks);
     }
@@ -197,5 +200,18 @@ export class Portfolio extends React.Component {
 
     setUSD() {
         this.setState({currency: "USD"})
+    }
+
+    calculateTotalValue() {
+        let exchange = 1;
+        if (this.state.currency === "EUR" && !!this.props.exchangeRate) {
+            exchange = this.props.exchangeRate;
+        }
+
+        let totalValue = 0;
+        for (const stock of this.state.stocks) {
+            totalValue += stock.value*stock.quantity*exchange;
+        }
+        return Math.round(totalValue*100)/100;
     }
 }

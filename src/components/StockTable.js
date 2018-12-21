@@ -10,6 +10,7 @@ const TableWrapper = styled.div`
   box-shadow: inset 1px 1px 5px rgba(0, 0, 0, 0.4);
   position: relative;
   table-layout: fixed;
+  background-color: white;
 `;
 
 const StyledTable = styled.table`

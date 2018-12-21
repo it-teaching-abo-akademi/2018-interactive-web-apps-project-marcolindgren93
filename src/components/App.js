@@ -1,4 +1,6 @@
 import React from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
 import { Button } from "./Button";
 import { PopupInput } from "./PopupInput";
@@ -25,7 +27,6 @@ export class App extends React.Component {
     this.state = {
       isPopupOpen: false,
       portfolios: JSON.parse(localStorage.getItem("portfolios")) || [],
-      exchangeError: null,
       exchangeIsLoaded: false,
       exchangeRate: -1,
     };
@@ -34,30 +35,17 @@ export class App extends React.Component {
     this.removePortfolio = this.removePortfolio.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.updateStocks = this.updateStocks.bind(this);
+    this.fetchExchange = this.fetchExchange.bind(this);
   }
 
   componentDidMount() {
-    fetch("https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=EUR&apikey="+process.env.REACT_APP_ALPHA_VANTAGE_API_KEY)
-      .then(response => response.json())
-      .then(
-        result => {
-          if ("Error Message" in result) {
-            this.setState({exchangeIsLoaded: true, exchangeError: {message: "Invalid symbol"}});
-          } else if ("Note" in result) {
-              this.setState({exchangeIsLoaded: true, exchangeError: {message: "API limit reached"}});
-          } else {
-            this.setState({exchangeIsLoaded: true, exchangeRate: result["Realtime Currency Exchange Rate"]["5. Exchange Rate"]});
-          }
-        },
-        error => {
-          this.setState({exchangeIsLoaded: true, exchangeError: error});
-        }
-      );
+    this.fetchExchange();
   }
 
   render() {
     return (
       <AppWrapper>
+        <ToastContainer position="top-center" />
         <Button label="Add new portfolio" onClick={() => this.togglePopup()} disabled={this.state.portfolios.length >= 10} />
         <PortfolioWrapper>
           {Object.keys(this.state.portfolios).map(key => (
@@ -67,7 +55,7 @@ export class App extends React.Component {
               portfolio={this.state.portfolios[key]}
               onDelete={this.removePortfolio}
               onUpdateStocks={this.updateStocks}
-              exchangeError={this.state.exchangeError}
+              onReloadExchange={this.fetchExchange}
               exchangeIsLoaded={this.state.exchangeIsLoaded}
               exchangeRate={parseFloat(this.state.exchangeRate)}
             />
@@ -114,5 +102,28 @@ export class App extends React.Component {
       this.setState({portfolios: newPortfolios});
       localStorage.setItem("portfolios", JSON.stringify(newPortfolios));
     }
+  }
+
+  fetchExchange() {
+      this.setState({exchangeIsLoaded: false});
+      fetch("https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=EUR&apikey="+process.env.REACT_APP_ALPHA_VANTAGE_API_KEY)
+          .then(response => response.json())
+          .then(
+              result => {
+                  if ("Error Message" in result) {
+                      this.setState({exchangeIsLoaded: true});
+                      toast.error("Invalid symbol!");
+                  } else if ("Note" in result) {
+                      this.setState({exchangeIsLoaded: true});
+                      toast.error("API limit reached. Please wait a minute and try again.");
+                  } else {
+                      this.setState({exchangeIsLoaded: true, exchangeRate: result["Realtime Currency Exchange Rate"]["5. Exchange Rate"]});
+                  }
+              },
+              error => {
+                  this.setState({exchangeIsLoaded: true});
+                  toast.error(error);
+              }
+          );
   }
 }

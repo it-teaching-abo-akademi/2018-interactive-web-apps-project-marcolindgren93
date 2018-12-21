@@ -1,4 +1,5 @@
 import * as React from "react";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { Button } from "./Button";
 import { CheckBox } from "./CheckBox";
@@ -18,7 +19,6 @@ export class Stock extends React.Component {
 
         this.state = {
             inputNum: this.props.quantity,
-            valueError: null,
             valueIsLoaded: false,
         };
 
@@ -52,8 +52,7 @@ export class Stock extends React.Component {
                     {!this.state.valueIsLoaded ? <LoadingSpinner size="10px"/> :
                         <span>{this.props.currency === "USD" && "$"}{Math.round(this.props.value*exchange*100)/100}{this.props.currency === "EUR" && "€"}</span>
                     }&nbsp;
-                    <Button label="&#8635;" color="springgreen" onClick={this.fetchData} tiny={true} />&nbsp;
-                    {!!this.state.valueError && this.state.valueError.message}
+                    <Button label="&nbsp;&#8635;&nbsp;" color="springgreen" onClick={() => this.fetchData()} tiny={true} />
                 </StyledTableData>
                 <StyledTableData>
                     <QuantityInput type="number" value={this.state.inputNum} min={0} onChange={event => this.handleInput(event)} />
@@ -80,22 +79,25 @@ export class Stock extends React.Component {
     }
 
     fetchData() {
-        this.setState({valueError: null, valueIsLoaded: false})
+        this.setState({valueIsLoaded: false});
         fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + this.props.name + "&apikey=" + process.env.REACT_APP_ALPHA_VANTAGE_API_KEY)
             .then(response => response.json())
             .then(
                 result => {
-                    if ("Error Message" in result) {
-                        this.setState({valueIsLoaded: true, valueError: {message: "Invalid symbol"}});
+                    if (!result["Global Quote"]) {
+                        this.setState({valueIsLoaded: true});
+                        toast.error("Invalid symbol!");
                     } else if ("Note" in result) {
-                        this.setState({valueIsLoaded: true, valueError: {message: "API call limit reached"}});
+                        this.setState({valueIsLoaded: true});
+                        toast.error("API call limit reached. Please wait a minute and try again.");
                     } else {
                         this.setState({valueIsLoaded: true});
                         this.props.onUpdateValue(this.props.index, result["Global Quote"]["05. price"]);
                     }
                 },
                 error => {
-                    this.setState({valueIsLoaded: true, valueError: error});
+                    this.setState({valueIsLoaded: true});
+                    toast.error(error);
                 }
             );
     }
