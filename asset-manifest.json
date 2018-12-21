@@ -1,13 +1,15 @@
 {
-  "main.css": "/2018-interactive-web-apps-project-marcolindgren93/static/css/main.b618adf0.chunk.css",
-  "main.js": "/2018-interactive-web-apps-project-marcolindgren93/static/js/main.a534c46d.chunk.js",
-  "main.js.map": "/2018-interactive-web-apps-project-marcolindgren93/static/js/main.a534c46d.chunk.js.map",
-  "static/js/1.b059dabe.chunk.js": "/2018-interactive-web-apps-project-marcolindgren93/static/js/1.b059dabe.chunk.js",
-  "static/js/1.b059dabe.chunk.js.map": "/2018-interactive-web-apps-project-marcolindgren93/static/js/1.b059dabe.chunk.js.map",
+  "main.css": "/2018-interactive-web-apps-project-marcolindgren93/static/css/main.e863c139.chunk.css",
+  "main.js": "/2018-interactive-web-apps-project-marcolindgren93/static/js/main.ad1bce97.chunk.js",
+  "main.js.map": "/2018-interactive-web-apps-project-marcolindgren93/static/js/main.ad1bce97.chunk.js.map",
+  "static/css/1.1b28e506.chunk.css": "/2018-interactive-web-apps-project-marcolindgren93/static/css/1.1b28e506.chunk.css",
+  "static/js/1.d5d56c63.chunk.js": "/2018-interactive-web-apps-project-marcolindgren93/static/js/1.d5d56c63.chunk.js",
+  "static/js/1.d5d56c63.chunk.js.map": "/2018-interactive-web-apps-project-marcolindgren93/static/js/1.d5d56c63.chunk.js.map",
   "runtime~main.js": "/2018-interactive-web-apps-project-marcolindgren93/static/js/runtime~main.064d53b1.js",
   "runtime~main.js.map": "/2018-interactive-web-apps-project-marcolindgren93/static/js/runtime~main.064d53b1.js.map",
-  "static/css/main.b618adf0.chunk.css.map": "/2018-interactive-web-apps-project-marcolindgren93/static/css/main.b618adf0.chunk.css.map",
+  "static/css/1.1b28e506.chunk.css.map": "/2018-interactive-web-apps-project-marcolindgren93/static/css/1.1b28e506.chunk.css.map",
+  "static/css/main.e863c139.chunk.css.map": "/2018-interactive-web-apps-project-marcolindgren93/static/css/main.e863c139.chunk.css.map",
   "index.html": "/2018-interactive-web-apps-project-marcolindgren93/index.html",
-  "precache-manifest.ff747835c9ae77a60292dbd55f5be41d.js": "/2018-interactive-web-apps-project-marcolindgren93/precache-manifest.ff747835c9ae77a60292dbd55f5be41d.js",
+  "precache-manifest.7ae18c549698c861aae1898d6b2cee57.js": "/2018-interactive-web-apps-project-marcolindgren93/precache-manifest.7ae18c549698c861aae1898d6b2cee57.js",
   "service-worker.js": "/2018-interactive-web-apps-project-marcolindgren93/service-worker.js"
 }
