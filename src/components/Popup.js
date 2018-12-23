@@ -25,6 +25,8 @@ const PopupWindow = styled.div`
   z-index: 101;
 `;
 
+/* A generic popup wrapper component */
+/* Makes sure the popup is drawn on top of everything else with a darkened background. Used in all popup windows. */
 export class Popup extends React.Component {
     render() {
         return (

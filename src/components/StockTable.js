@@ -73,9 +73,10 @@ export const StyledTableData = styled.td`
   }
 `;
 
+/* A Stock table wrapper component */
+/* Includes the table heading */
 export class StockTable extends React.Component {
     render() {
-        // TODO: Replace table with divs, min-width: 56, flex: 1, overflow: hidden
         return (
             <TableWrapper>
                 <StyledTable>

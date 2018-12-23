@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
+/* Styled components can also take in props to alter their appearance dynamically. */
 const StyledButton = styled.button`
   padding: ${props => props.tiny ? "2px" : "8px"};
   text-transform: uppercase;
@@ -13,6 +14,14 @@ const StyledButton = styled.button`
   cursor: ${props => props.disabled ? 'default' : 'pointer'};
 `;
 
+/* A generic button component */
+/*  Props:
+ *  label - The button label
+ *  tiny - If this is true, the button is smaller
+ *  color - The color of the button. If it isn't set, the button is dodgerblue
+ *  disabled - If this is true, the button is grayed out and does not execute onClick
+ *  onClick - Takes a function that the button should execute once clicked
+ */
 export class Button extends React.Component {
     render() {
         return (

@@ -6,6 +6,9 @@ import { Button } from "./Button";
 import { PopupInput } from "./PopupInput";
 import { Portfolio } from "./Portfolio";
 
+/* These two constants are styled components */
+/* They use the library "styled-components" to insert CSS into individual component pieces. */
+/* This means we don't need to assign classes or clunky, monolithic CSS files. We can use these similarly to React components instead. */
 const AppWrapper = styled.div`
   width: 100%;
   height: 100%;
@@ -20,15 +23,16 @@ const PortfolioWrapper = styled.div`
   flex-direction: row;
 `;
 
+/* This is the main App component of the site. It takes care of the local storage and lays down the basic groundwork. */
 export class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      isPopupOpen: false,
-      portfolios: JSON.parse(localStorage.getItem("portfolios")) || [],
-      exchangeIsLoaded: false,
-      exchangeRate: -1,
+      isPopupOpen: false, // Keeps track of the "Add new portfolio" popup.
+      portfolios: JSON.parse(localStorage.getItem("portfolios")) || [], // These are all the portfolios of the program. If none are found in the local storage at startup, we have an empty array instead.
+      exchangeIsLoaded: false, // False while the api is being called, true when it's not
+      exchangeRate: -1, // If this value is negative, the exchange rate api call hasn't returned anything (yet or at all)
     };
 
     this.newPortfolio = this.newPortfolio.bind(this);
@@ -43,9 +47,10 @@ export class App extends React.Component {
   }
 
   render() {
+    // Details of each component and their props are in their respective files.
     return (
       <AppWrapper>
-        <ToastContainer position="top-center" />
+        <ToastContainer position="top-center" /> {/* This component is needed for toasts made with react-toastify */}
         <Button label="Add new portfolio" onClick={() => this.togglePopup()} disabled={this.state.portfolios.length >= 10} />
         <PortfolioWrapper>
           {Object.keys(this.state.portfolios).map(key => (
@@ -74,18 +79,21 @@ export class App extends React.Component {
     );
   }
 
+  // Toggles the isPopupOpen state variable between true and false.
   togglePopup() {
     this.setState({isPopupOpen: !this.state.isPopupOpen})
   }
 
+  // Adds a new portfolio with a specified name to the portfolios.
   newPortfolio(name) {
     if (this.state.portfolios.length < 10) {
-      const newPortfolios = this.state.portfolios.concat([{name: name || "", currency: "EUR", stocks: []}]);
+      const newPortfolios = this.state.portfolios.concat([{name: name || "", stocks: []}]);
       this.setState({portfolios: newPortfolios});
       localStorage.setItem("portfolios", JSON.stringify(newPortfolios));
     }
   }
 
+  // Removes the portfolio with the given index from the portfolio array. Passed to and called from the Portfolio components
   removePortfolio(index) {
     if (parseInt(index) >= 0) {
       let newPortfolios = this.state.portfolios;
@@ -95,6 +103,7 @@ export class App extends React.Component {
     }
   }
 
+  // Update the stocks of a portfolio. Passed to and called from the Portfolio components
   updateStocks(index, newStocks) {
     if (parseInt(index) >= 0) {
       const newPortfolios = this.state.portfolios;
@@ -104,20 +113,21 @@ export class App extends React.Component {
     }
   }
 
+  // Fetches the current USD->EUR exchange rate using the Alpha Vantage API. Called when the App mounts or from a Portfolio if the API fetch failed.
   fetchExchange() {
       this.setState({exchangeIsLoaded: false});
       fetch("https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=EUR&apikey="+process.env.REACT_APP_ALPHA_VANTAGE_API_KEY)
-          .then(response => response.json())
+          .then(response => response.json()) // Get the API response JSON
           .then(
               result => {
-                  if ("Error Message" in result) {
+                  if ("Error Message" in result) { // This key only appears in the result JSON when an invalid symbol is given
                       this.setState({exchangeIsLoaded: true});
-                      toast.error("Invalid symbol!");
-                  } else if ("Note" in result) {
+                      toast.error("Invalid symbol!"); // Fire an error toast (uses the external library react-toastify)
+                  } else if ("Note" in result) { // This key only appears in the result JSON when the API limit has been reached. The limit is five requests per minute and 500 per day.
                       this.setState({exchangeIsLoaded: true});
                       toast.error("API limit reached. Please wait a minute and try again.");
                   } else {
-                      this.setState({exchangeIsLoaded: true, exchangeRate: result["Realtime Currency Exchange Rate"]["5. Exchange Rate"]});
+                      this.setState({exchangeIsLoaded: true, exchangeRate: result["Realtime Currency Exchange Rate"]["5. Exchange Rate"]}); // Set the exchange rate to the one from AV
                   }
               },
               error => {

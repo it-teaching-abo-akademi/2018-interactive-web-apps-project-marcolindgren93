@@ -41,16 +41,26 @@ export const ButtonWrapper = styled.div`
   margin-top: 10px;
 `;
 
+/* The portfolio component */
+/*  Props:
+ *  index - The current array index in App's portfolio array
+ *  portfolio - The portfolio object that this component handles
+ *  onDelete - What happens when the portfolio is deleted
+ *  onUpdateStocks - The function that executes when stocks are updated
+ *  onReloadExchange - The function that reloads the exchange rates in App
+ *  exchangeIsLoaded - True if exchange rates are loaded, false if not
+ *  exchangeRate - The loaded exchange rate
+ */
 export class Portfolio extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            isGraphOpen: false,
-            isInputOpen: false,
-            stocks: this.props.portfolio.stocks,
-            selectedStocks: [],
-            currency: "USD",
+            isGraphOpen: false, // If set to true, the performance graph popup is open, otherwise it isn't
+            isInputOpen: false, // If set to true, the stock symbol input popup is open, otherwise not
+            stocks: this.props.portfolio.stocks, // The array of stock objects in the portfolio
+            selectedStocks: [], // Array of currently selected stocks' indices
+            currency: "USD", // The selected currency. Defaults to USD as the API values are loaded in USD
         };
 
         this.toggleGraphPopup = this.toggleGraphPopup.bind(this);
@@ -66,7 +76,7 @@ export class Portfolio extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.portfolio !== this.props.portfolio) {
-            this.resetState();
+            this.resetState(); // If the portfolio object given by App changes, reset the state to display the correct stocks
         }
     }
 
@@ -106,7 +116,8 @@ export class Portfolio extends React.Component {
                 </ButtonWrapper>
                 <ButtonWrapper>
                     <Button label="Add Stock" onClick={this.toggleInputPopup} disabled={this.state.stocks.length >= 50} />
-                    <Button label="Performance graph" onClick={this.toggleGraphPopup} disabled={this.state.selectedStocks.length < 2 || this.state.selectedStocks.length > 3} />
+                    {/* Because of the Alpha Vantage API limitations, the performance graph has been set to only be openable when 1-3 stocks are selected. If the API didn't have limits this wouldn't be necessary */}
+                    <Button label="Performance graph" onClick={this.toggleGraphPopup} disabled={this.state.selectedStocks.length < 1 || this.state.selectedStocks.length > 3} />
                     <Button label="Remove selected" onClick={this.removeStocks} disabled={this.state.selectedStocks.length === 0} />
                 </ButtonWrapper>
 
@@ -128,14 +139,17 @@ export class Portfolio extends React.Component {
         );
     }
 
+    // Toggles the performance graph popup state
     toggleGraphPopup() {
         this.setState({isGraphOpen: !this.state.isGraphOpen})
     }
 
+    // Toggles the stock symbol input popup state
     toggleInputPopup() {
         this.setState({isInputOpen: !this.state.isInputOpen})
     }
 
+    // Adds a stock to the portfolio and updates the stock in App to save it
     newStock(symbol) {
         if (this.state.stocks.length < 50 && symbol) {
             const newStocks = this.state.stocks.concat([{symbol: symbol.toUpperCase(), quantity: 1, value: 0}]);
@@ -144,6 +158,7 @@ export class Portfolio extends React.Component {
         }
     }
 
+    // Updates the number of stocks in the portfolio object in App
     updateStockQuantity(index, newQuantity) {
         if (parseInt(index) >= 0) {
             const newStocks = this.state.stocks;
@@ -153,6 +168,7 @@ export class Portfolio extends React.Component {
         }
     }
 
+    // Updates the value of a Stock
     updateStockValue(index, newValue) {
         if (parseInt(index) >= 0) {
             const newStocks = this.state.stocks;
@@ -162,6 +178,7 @@ export class Portfolio extends React.Component {
         }
     }
 
+    // Toggles a selected Stock in the selected stock index array
     toggleSelect(index) {
         if (parseInt(index) >= 0) {
             const stocks = this.state.selectedStocks;
@@ -175,6 +192,7 @@ export class Portfolio extends React.Component {
         }
     }
 
+    // Removes all selected stocks. Indices are corrected after every removal since they will change.
     removeStocks() {
         const selected = this.state.selectedStocks;
         const newStocks = this.state.stocks;
@@ -190,18 +208,22 @@ export class Portfolio extends React.Component {
         this.props.onUpdateStocks(this.props.index, newStocks);
     }
 
+    // Reset the stock state
     resetState() {
         this.setState({stocks: this.props.portfolio.stocks, selectedStocks: [],});
     }
 
+    // Set the currently displayed currency to euros
     setEUR() {
         this.setState({currency: "EUR"});
     }
 
+    // Set the currently displayed currency to US dollars
     setUSD() {
         this.setState({currency: "USD"})
     }
 
+    // Calculates the total value of the stocks in the portfolio
     calculateTotalValue() {
         let exchange = 1;
         if (this.state.currency === "EUR" && !!this.props.exchangeRate) {

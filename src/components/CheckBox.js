@@ -10,6 +10,11 @@ const CheckBoxButton = styled.button`
   background-color: ${props => props.checked ? 'orange' : 'transparent'};
 `;
 
+/* A generic checkbox component. Its state is handled in its parent. */
+/*  Props:
+ *  checked - If this is true the checkbox is checked, otherwise it's unchecked
+ *  onClick - Takes a function that the checkbox should execute once clicked. Preferably something that changes the checked state in the parent
+ */
 export class CheckBox extends React.Component {
     render() {
         return (
